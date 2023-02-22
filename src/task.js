@@ -19,7 +19,7 @@ const task = (title, desc, dueDate, priority) => {
   const setDesc = (newDesc) => (desc = newDesc);
   const setDueDate = (newDueDate) => (dueDate = newDueDate);
   const setPriority = (priorityLevel) => (priority = priorityLevel);
-  const setCompleted = (newCompleted) => completed;
+  const setCompleted = (newCompleted) => (completed = newCompleted);
   return {
     getTitle,
     getDesc,

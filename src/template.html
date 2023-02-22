@@ -7,6 +7,22 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
-    <div class="container"></div>
+    <div class="container">
+      <div class="project-header">
+        <div class="project-header-text">Projects</div>
+        <button type="button" class="add-project-btn">+</button>
+      </div>
+      <form action="#" class="add-project-form" hidden>
+        <input
+          type="text"
+          name="add-project"
+          id="add-project-input"
+          required
+          minlength="1"
+          maxlength="25"
+        />
+        <button type="button" class="submit-new-project-btn">+</button>
+      </form>
+    </div>
   </body>
 </html>
