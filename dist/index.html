@@ -5,24 +5,52 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todo List</title>
-  <script defer src="bundle3c0f2ebb9c09358cd7d5.js"></script></head>
+  <script defer src="bundled2201cbe4cef0210f53d.js"></script></head>
   <body>
     <div class="container">
-      <div class="project-header">
-        <div class="project-header-text">Projects</div>
-        <button type="button" class="add-project-btn">+</button>
+      <div class="project-container">
+        <div class="project-header">
+          <div class="project-header-text">Projects</div>
+          <button type="button" class="add-project-btn">+</button>
+        </div>
+        <form action="#" class="add-project-form" hidden>
+          <input
+            type="text"
+            name="add-project"
+            id="add-project-input"
+            required
+            minlength="1"
+            maxlength="25"
+          />
+          <button type="button" class="submit-new-project-btn">+</button>
+        </form>
       </div>
-      <form action="#" class="add-project-form" hidden>
-        <input
-          type="text"
-          name="add-project"
-          id="add-project-input"
-          required
-          minlength="1"
-          maxlength="25"
-        />
-        <button type="button" class="submit-new-project-btn">+</button>
-      </form>
+      <div class="task-container">
+        <div class="task-header">
+          <div class="task-header-text">Tasks</div>
+          <button type="button" class="add-task-btn">+</button>
+        </div>
+        <form action="#" class="add-task-form" hidden>
+          <label for="task-name">Name:</label>
+          <input type="text" name="task-name" id="task-name" />
+          <label for="task-desc">Description:</label>
+          <textarea
+            name="task-desc"
+            id="task-desc"
+            cols="30"
+            rows="2"
+          ></textarea>
+          <label for="task-due-date">Due Date:</label
+          ><input type="date" name="task-due-date" id="task-due-date" />
+          <label for="task-priority">Priority</label>
+          <select name="task-priority" id="task-priority">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+          <button type="button" class="submit-new-task-btn">+</button>
+        </form>
+      </div>
     </div>
   </body>
 </html>
