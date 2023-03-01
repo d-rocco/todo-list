@@ -3,6 +3,19 @@ import projectManager from "./projectManager";
 import task from "./task";
 import domManager from "./domManager";
 
+function showActiveProjectTasks() {
+  while (domManager.getTaskBody().lastChild) {
+    domManager.getTaskBody().removeChild(domManager.getTaskBody().lastChild);
+  }
+  console.log(projectManager.getRecentProject().tasks.length);
+  for (let i = 0; i < projectManager.getRecentProject().tasks.length; i++) {
+    addTaskToDom(
+      projectManager.getRecentProject().tasks[i],
+      domManager.getTaskBody()
+    );
+  }
+}
+
 function makeProjectActive(e, activeProject) {
   domManager
     .getProjectBody()
@@ -12,6 +25,7 @@ function makeProjectActive(e, activeProject) {
     });
   e.target.classList.add("active");
   projectManager.setRecentProject(activeProject);
+  showActiveProjectTasks();
 }
 
 function addProjectToDOM(addedProject, parentContainer) {
@@ -33,6 +47,7 @@ function addProjectToDOM(addedProject, parentContainer) {
   projectName.addEventListener("click", function (e) {
     makeProjectActive(e, addedProject);
   });
+  showActiveProjectTasks();
 }
 
 function addTaskToDom(task, parentContainer) {
