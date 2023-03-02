@@ -82,4 +82,27 @@ function submitTask() {
   }
 }
 
-export { submitProject, submitTask };
+function createDefaultProject() {
+  const defaultProject = project(
+    "Sample Project",
+    format(new Date(), "MMM dd, yyyy")
+  );
+  projectManager.projects.push(defaultProject);
+  projectManager.setRecentProject(defaultProject);
+  const parentContainer = document.querySelector(".project-body");
+  addProjectToDOM(defaultProject, parentContainer);
+}
+
+function createDefaultTask() {
+  const parentContainer = document.querySelector(".task-body");
+  const defaultTask = task(
+    "Sample Task",
+    "Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, ia",
+    "No Due Date",
+    "Medium"
+  );
+  projectManager.getRecentProject().tasks.push(defaultTask);
+  addTaskToDom(defaultTask, parentContainer);
+}
+
+export { submitProject, submitTask, createDefaultProject, createDefaultTask };

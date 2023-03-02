@@ -58,10 +58,13 @@ function addTaskToDom(task, parentContainer) {
   const desc = document.createElement("div");
   desc.textContent = task.getDesc();
   const dueDate = document.createElement("div");
-  dueDate.textContent = task.getDueDate();
+  if (task.getDueDate() === "No Due Date") {
+    dueDate.textContent = task.getDueDate();
+  } else {
+    dueDate.textContent = `Due ${task.getDueDate()}`;
+  }
   const priority = document.createElement("div");
-  priority.textContent = task.getPriority();
-
+  priority.textContent = `${task.getPriority()} Priority`;
   singleTaskContainer.appendChild(title);
   singleTaskContainer.appendChild(desc);
   singleTaskContainer.appendChild(dueDate);

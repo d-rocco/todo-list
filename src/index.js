@@ -1,7 +1,14 @@
 import "./styles/main.css";
-import { submitProject, submitTask } from "./create";
+import {
+  submitProject,
+  submitTask,
+  createDefaultProject,
+  createDefaultTask,
+} from "./create";
 
 /***Project Related Code***/
+
+createDefaultProject();
 
 // provides text input for user to type name of new project
 document
@@ -30,6 +37,10 @@ document
   });
 
 /***Task Related Code***/
+
+for (let i = 0; i < 3; i++) {
+  createDefaultTask();
+}
 
 // provides form for inputting new task
 document.querySelector(".add-task-btn").addEventListener("click", function (e) {
