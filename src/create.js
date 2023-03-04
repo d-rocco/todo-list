@@ -93,10 +93,10 @@ function createDefaultProject() {
   addProjectToDOM(defaultProject, parentContainer);
 }
 
-function createDefaultTask() {
+function createDefaultTask(num) {
   const parentContainer = document.querySelector(".task-body");
   const defaultTask = task(
-    "Sample Task",
+    `Sample Task ${num}`,
     "Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, ia",
     "No Due Date",
     "Medium"

@@ -17,15 +17,35 @@ function showActiveProjectTasks() {
 }
 
 function makeProjectActive(e, activeProject) {
-  domManager
-    .getProjectBody()
-    .querySelectorAll("button")
-    .forEach((button) => {
-      button.classList.remove("active");
-    });
-  e.target.classList.add("active");
-  projectManager.setRecentProject(activeProject);
-  showActiveProjectTasks();
+  if (projectManager.getRecentProject() !== activeProject) {
+    domManager
+      .getProjectBody()
+      .querySelectorAll("button")
+      .forEach((button) => {
+        button.classList.remove("active");
+      });
+    e.target.classList.add("active");
+    projectManager.setRecentProject(activeProject);
+    showActiveProjectTasks();
+  }
+}
+
+function createCheckBox(task) {
+  const container = document.createElement("div");
+  const label = document.createElement("label");
+  label.setAttribute("for", "is-completed-check");
+  label.textContent = "Complete";
+  const checkbox = document.createElement("input");
+  checkbox.setAttribute("type", "checkbox");
+  checkbox.setAttribute("name", "is-completed-check");
+  checkbox.classList.add("is-completed-check");
+  if (task.isCompleted()) {
+    checkbox.checked = true;
+  }
+  container.appendChild(label);
+  container.appendChild(checkbox);
+
+  return container;
 }
 
 function addProjectToDOM(addedProject, parentContainer) {
@@ -50,6 +70,15 @@ function addProjectToDOM(addedProject, parentContainer) {
   showActiveProjectTasks();
 }
 
+function checkIfAllTasksCompleted() {
+  for (let i = 0; i < projectManager.getRecentProject().tasks.length; i++) {
+    if (!projectManager.getRecentProject().tasks[i].isCompleted()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function addTaskToDom(task, parentContainer) {
   const singleTaskContainer = document.createElement("div");
   parentContainer.appendChild(singleTaskContainer);
@@ -69,7 +98,55 @@ function addTaskToDom(task, parentContainer) {
   singleTaskContainer.appendChild(desc);
   singleTaskContainer.appendChild(dueDate);
   singleTaskContainer.appendChild(priority);
+  singleTaskContainer.appendChild(createCheckBox(task));
+  if (task.isCompleted()) {
+    singleTaskContainer.classList.add("completed-border");
+  }
   domManager.updateTaskBody();
+  document.querySelectorAll(".is-completed-check").forEach((box) => {
+    box.addEventListener("click", function (e) {
+      const checkBoxStatus = e.target.checked;
+      const taskName =
+        e.target.parentElement.parentElement.childNodes[0].textContent;
+      for (let i = 0; i < projectManager.getRecentProject().tasks.length; i++) {
+        if (
+          projectManager.getRecentProject().tasks[i].getTitle() === taskName &&
+          checkBoxStatus
+        ) {
+          projectManager
+            .getRecentProject()
+            .tasks[i].setCompleted(checkBoxStatus);
+          e.target.parentElement.parentElement.classList.add(
+            "completed-border"
+          );
+        } else if (
+          projectManager.getRecentProject().tasks[i].getTitle() === taskName &&
+          !checkBoxStatus
+        ) {
+          projectManager
+            .getRecentProject()
+            .tasks[i].setCompleted(checkBoxStatus);
+          e.target.parentElement.parentElement.classList.remove(
+            "completed-border"
+          );
+        }
+      }
+      domManager.updateTaskBody();
+      console.log(domManager.getTaskBody());
+      if (checkIfAllTasksCompleted()) {
+        domManager
+          .getProjectBody()
+          .querySelector(".active")
+          .classList.add("completed-project");
+      } else {
+        domManager
+          .getProjectBody()
+          .querySelector(".active")
+          .classList.remove("completed-project");
+      }
+      domManager.updateProjectBody();
+    });
+  });
 }
 
 export { addProjectToDOM, addTaskToDom };

@@ -39,7 +39,7 @@ document
 /***Task Related Code***/
 
 for (let i = 0; i < 3; i++) {
-  createDefaultTask();
+  createDefaultTask(i + 1);
 }
 
 // provides form for inputting new task
