@@ -74,9 +74,31 @@ body {
   cursor: pointer;
 }
 
-.project-body > div:nth-child(even) {
+.project-body > div {
+  display: grid;
+  grid-template: auto auto / auto auto;
+  align-items: center;
+  justify-content: start;
+}
+
+.project-body > div > div {
   margin-bottom: 16px;
   font-style: italic;
+  grid-row: 2 / 3;
+}
+
+.project-body > div > i {
+  margin-left: 16px;
+}
+
+.project-body > div > i:hover {
+  color: #a93b3b;
+  font-size: 30px;
+}
+
+.project-body > div > i:active {
+  color: #a93b3b;
+  font-size: 24px;
 }
 
 .project:hover {

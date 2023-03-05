@@ -14,6 +14,7 @@ function showActiveProjectTasks() {
       domManager.getTaskBody()
     );
   }
+  domManager.updateTaskBody();
 }
 
 function makeProjectActive(e, activeProject) {
@@ -24,7 +25,7 @@ function makeProjectActive(e, activeProject) {
       .forEach((button) => {
         button.classList.remove("active");
       });
-    e.target.classList.add("active");
+    e.classList.add("active");
     projectManager.setRecentProject(activeProject);
     showActiveProjectTasks();
   }
@@ -48,6 +49,26 @@ function createCheckBox(task) {
   return container;
 }
 
+function removeProject(project, e) {
+  const projectNames = projectManager.projects.map((p) => `${p.getName()}`);
+  const i = projectNames.indexOf(project.getName());
+  projectManager.projects.splice(i, 1);
+  e.target.parentElement.remove();
+  domManager.updateProjectBody();
+  if (domManager.getProjectBody().firstChild) {
+    console.log(domManager.getProjectBody().childNodes[0].firstChild);
+    makeProjectActive(
+      domManager.getProjectBody().childNodes[0].firstChild,
+      projectManager.projects[0]
+    );
+  } else {
+    while (domManager.getTaskBody().lastChild) {
+      domManager.getTaskBody().removeChild(domManager.getTaskBody().lastChild);
+    }
+    domManager.updateTaskBody();
+  }
+}
+
 function addProjectToDOM(addedProject, parentContainer) {
   domManager
     .getProjectBody()
@@ -55,17 +76,27 @@ function addProjectToDOM(addedProject, parentContainer) {
     .forEach((button) => {
       button.classList.remove("active");
     });
+  const projectContainer = document.createElement("div");
   const projectName = document.createElement("button");
   const projectDateCreated = document.createElement("div");
   projectName.textContent = addedProject.getName();
   projectDateCreated.textContent = addedProject.getDateCreated();
   projectName.classList.add("project");
   projectName.classList.add("active");
-  parentContainer.appendChild(projectName);
-  parentContainer.appendChild(projectDateCreated);
+  const removeBtn = document.createElement("i");
+  removeBtn.classList.add("fa-regular");
+  removeBtn.classList.add("fa-trash-can");
+  removeBtn.classList.add("fa-xl");
+  projectContainer.appendChild(projectName);
+  projectContainer.appendChild(projectDateCreated);
+  projectContainer.appendChild(removeBtn);
+  parentContainer.appendChild(projectContainer);
   domManager.updateProjectBody();
+  removeBtn.addEventListener("click", function (e) {
+    removeProject(addedProject, e);
+  });
   projectName.addEventListener("click", function (e) {
-    makeProjectActive(e, addedProject);
+    makeProjectActive(e.target, addedProject);
   });
   showActiveProjectTasks();
 }
@@ -103,6 +134,12 @@ function addTaskToDom(task, parentContainer) {
     singleTaskContainer.classList.add("completed-border");
   }
   domManager.updateTaskBody();
+  if (!checkIfAllTasksCompleted()) {
+    domManager
+      .getProjectBody()
+      .querySelector(".active")
+      .classList.remove("completed-project");
+  }
   document.querySelectorAll(".is-completed-check").forEach((box) => {
     box.addEventListener("click", function (e) {
       const checkBoxStatus = e.target.checked;

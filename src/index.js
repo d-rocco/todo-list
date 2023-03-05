@@ -55,3 +55,11 @@ document
     e.preventDefault();
     submitTask();
   });
+
+document
+  .querySelector(".add-task-form")
+  .addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  });
