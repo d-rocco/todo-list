@@ -69,6 +69,16 @@ function removeProject(project, e) {
   }
 }
 
+function removeTask(task, e) {
+  const taskNames = projectManager
+    .getRecentProject()
+    .tasks.map((t) => `${t.getTitle()}`);
+  const i = taskNames.indexOf(task.getTitle());
+  projectManager.getRecentProject().tasks.splice(i, 1);
+  e.target.parentElement.remove();
+  domManager.updateTaskBody();
+}
+
 function addProjectToDOM(addedProject, parentContainer) {
   domManager
     .getProjectBody()
@@ -130,6 +140,14 @@ function addTaskToDom(task, parentContainer) {
   singleTaskContainer.appendChild(dueDate);
   singleTaskContainer.appendChild(priority);
   singleTaskContainer.appendChild(createCheckBox(task));
+  const removeBtn = document.createElement("i");
+  removeBtn.classList.add("fa-regular");
+  removeBtn.classList.add("fa-trash-can");
+  removeBtn.classList.add("fa-xl");
+  singleTaskContainer.appendChild(removeBtn);
+  removeBtn.addEventListener("click", function (e) {
+    removeTask(task, e);
+  });
   if (task.isCompleted()) {
     singleTaskContainer.classList.add("completed-border");
   }

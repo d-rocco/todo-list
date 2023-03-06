@@ -91,12 +91,14 @@ body {
   margin-left: 16px;
 }
 
-.project-body > div > i:hover {
+.project-body > div > i:hover,
+.task-body > div > i:hover {
   color: #a93b3b;
   font-size: 30px;
 }
 
-.project-body > div > i:active {
+.project-body > div > i:active,
+.task-body > div > i:active {
   color: #a93b3b;
   font-size: 24px;
 }
@@ -194,4 +196,11 @@ body {
   width: 24px;
   accent-color: var(--completed-color);
   margin: 0 4px;
+}
+
+.task-body > div > i {
+  grid-row: 4 / 5;
+  grid-column: 3 / 4;
+  align-self: center;
+  justify-self: end;
 }
