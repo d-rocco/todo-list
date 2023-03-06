@@ -132,7 +132,8 @@ body {
   padding: 16px;
   display: grid;
   grid-template-columns: repeat(3, auto);
-  grid-template-rows: auto 100px auto auto;
+  grid-template-rows: auto auto auto auto;
+  align-content: space-between;
   gap: 16px;
   border-radius: 16px;
   background-color: var(--black-color);
@@ -155,7 +156,7 @@ body {
 }
 
 .task-body > div > div:nth-child(2) {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 300;
   line-height: 140%;
   grid-row: 2 / 3;
@@ -164,7 +165,6 @@ body {
 
 .task-body > div > div:nth-child(3) {
   font-size: 24px;
-  font-weight: 700;
   text-decoration: underline;
   grid-row: 3 / 4;
   grid-column: 1 / 2;
