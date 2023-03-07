@@ -5,10 +5,13 @@ import {
   createDefaultProject,
   createDefaultTask,
 } from "./create";
+import { loadProjects } from "./storage";
 
 /***Project Related Code***/
 
-createDefaultProject();
+loadProjects();
+
+// createDefaultProject();
 
 // provides text input for user to type name of new project
 document
@@ -38,9 +41,9 @@ document
 
 /***Task Related Code***/
 
-for (let i = 0; i < 3; i++) {
-  createDefaultTask(i + 1);
-}
+// for (let i = 0; i < 3; i++) {
+//   createDefaultTask(i + 1);
+// }
 
 // provides form for inputting new task
 document.querySelector(".add-task-btn").addEventListener("click", function (e) {

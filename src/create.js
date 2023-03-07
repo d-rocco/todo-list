@@ -3,6 +3,7 @@ import projectManager from "./projectManager";
 import task from "./task";
 import { format, formatDistance, subDays } from "date-fns";
 import { addProjectToDOM, addTaskToDom } from "./manage";
+import { writeProject, writeTask } from "./storage";
 
 function submitProject() {
   const textInput = document.getElementById("add-project-input");
@@ -22,6 +23,7 @@ function submitProject() {
     );
     projectManager.projects.push(addedProject);
     projectManager.setRecentProject(addedProject);
+    writeProject(addedProject);
     textInput.value = "";
     const parentContainer = document.querySelector(".project-body");
     addProjectToDOM(addedProject, parentContainer);
@@ -56,6 +58,7 @@ function submitTask() {
         formData[0][3].value
       );
       projectManager.getRecentProject().tasks.push(addedTask);
+      writeTask(projectManager.getRecentProject(), addedTask);
       for (let i = 0; i < 3; i++) {
         formData[0][i].value = "";
       }
@@ -71,6 +74,7 @@ function submitTask() {
         formData[0][3].value
       );
       projectManager.getRecentProject().tasks.push(addedTask);
+      writeTask(projectManager.getRecentProject(), addedTask);
       for (let i = 0; i < 3; i++) {
         formData[0][i].value = "";
       }

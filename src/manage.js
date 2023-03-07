@@ -2,6 +2,12 @@ import project from "./project";
 import projectManager from "./projectManager";
 import task from "./task";
 import domManager from "./domManager";
+import {
+  deleteProject,
+  deleteTask,
+  updateCompletedProject,
+  updateCompletedTask,
+} from "./storage";
 
 function showActiveProjectTasks() {
   while (domManager.getTaskBody().lastChild) {
@@ -53,6 +59,7 @@ function removeProject(project, e) {
   const projectNames = projectManager.projects.map((p) => `${p.getName()}`);
   const i = projectNames.indexOf(project.getName());
   projectManager.projects.splice(i, 1);
+  deleteProject(project);
   e.target.parentElement.remove();
   domManager.updateProjectBody();
   if (domManager.getProjectBody().firstChild) {
@@ -75,6 +82,7 @@ function removeTask(task, e) {
     .tasks.map((t) => `${t.getTitle()}`);
   const i = taskNames.indexOf(task.getTitle());
   projectManager.getRecentProject().tasks.splice(i, 1);
+  deleteTask(projectManager.getRecentProject(), task);
   e.target.parentElement.remove();
   domManager.updateTaskBody();
 }
@@ -101,6 +109,11 @@ function addProjectToDOM(addedProject, parentContainer) {
   projectContainer.appendChild(projectDateCreated);
   projectContainer.appendChild(removeBtn);
   parentContainer.appendChild(projectContainer);
+  if (addedProject.isCompleted()) {
+    projectName.classList.add("completed-project");
+  } else {
+    projectName.classList.remove("completed-project");
+  }
   domManager.updateProjectBody();
   removeBtn.addEventListener("click", function (e) {
     removeProject(addedProject, e);
@@ -157,6 +170,11 @@ function addTaskToDom(task, parentContainer) {
       .getProjectBody()
       .querySelector(".active")
       .classList.remove("completed-project");
+  } else {
+    domManager
+      .getProjectBody()
+      .querySelector(".active")
+      .classList.add("completed-project");
   }
   document.querySelectorAll(".is-completed-check").forEach((box) => {
     box.addEventListener("click", function (e) {
@@ -171,6 +189,10 @@ function addTaskToDom(task, parentContainer) {
           projectManager
             .getRecentProject()
             .tasks[i].setCompleted(checkBoxStatus);
+          updateCompletedTask(
+            projectManager.getRecentProject(),
+            projectManager.getRecentProject().tasks[i]
+          );
           e.target.parentElement.parentElement.classList.add(
             "completed-border"
           );
@@ -181,19 +203,26 @@ function addTaskToDom(task, parentContainer) {
           projectManager
             .getRecentProject()
             .tasks[i].setCompleted(checkBoxStatus);
+          updateCompletedTask(
+            projectManager.getRecentProject(),
+            projectManager.getRecentProject().tasks[i]
+          );
           e.target.parentElement.parentElement.classList.remove(
             "completed-border"
           );
         }
       }
       domManager.updateTaskBody();
-      console.log(domManager.getTaskBody());
       if (checkIfAllTasksCompleted()) {
+        projectManager.getRecentProject().setCompleted(true);
+        updateCompletedProject(projectManager.getRecentProject());
         domManager
           .getProjectBody()
           .querySelector(".active")
           .classList.add("completed-project");
       } else {
+        projectManager.getRecentProject().setCompleted(false);
+        updateCompletedProject(projectManager.getRecentProject());
         domManager
           .getProjectBody()
           .querySelector(".active")
@@ -204,4 +233,4 @@ function addTaskToDom(task, parentContainer) {
   });
 }
 
-export { addProjectToDOM, addTaskToDom };
+export { addProjectToDOM, addTaskToDom, showActiveProjectTasks };
