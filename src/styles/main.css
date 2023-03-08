@@ -40,6 +40,26 @@ body {
   white-space: nowrap;
 }
 
+#sign-form {
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+  display: grid;
+  grid-template: auto / auto auto;
+  align-content: center;
+  align-items: start;
+  justify-items: end;
+  justify-content: end;
+  gap: 16px;
+}
+
+#sign-out-form {
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+  display: none;
+  justify-content: end;
+  align-items: start;
+}
+
 .project-container {
   grid-row: 2 / 3;
   grid-column: 1 / 2;
@@ -51,12 +71,12 @@ body {
   font-weight: 500;
   display: flex;
   gap: 8px;
-  align-items: center;
   margin-bottom: 16px;
 }
 
 .add-project-btn,
-.add-task-btn {
+.add-task-btn,
+.submit-new-project-btn {
   height: 40px;
   width: 40px;
   font-size: 24px;

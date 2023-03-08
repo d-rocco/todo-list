@@ -4,19 +4,23 @@ import {
   setDoc,
   doc,
   deleteDoc,
-  getDoc,
   getDocs,
   collection,
   updateDoc,
 } from "firebase/firestore";
 import {
-  addProjectToDOM,
-  addTaskToDom,
-  showActiveProjectTasks,
-} from "./manage";
+  createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { addProjectToDOM, showActiveProjectTasks } from "./manage";
 import project from "./project";
 import projectManager from "./projectManager";
 import task from "./task";
+import { showSignForm, showSignOut } from "./index";
+import domManager from "./domManager";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB4IZsN8OJAAbk7LNAg91nTLicYjHQwkoY",
@@ -29,83 +33,200 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+async function createAccount(txtEmail, txtPassword) {
+  const email = txtEmail.value;
+  const password = txtPassword.value;
+
+  await createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential;
+      console.log(user);
+    })
+    .catch((error) => {
+      console.log("MAYDAY");
+    });
+}
+
+async function signAccountIn(txtEmail, txtPassword) {
+  const email = txtEmail.value;
+  const password = txtPassword.value;
+
+  await signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential;
+      console.log(user);
+    })
+    .catch((error) => {
+      console.log("MAYDAY");
+    });
+}
+
+async function monitorAuthState() {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log(auth.currentUser);
+      showSignOut();
+      loadProjects();
+    } else {
+      showSignForm();
+    }
+  });
+}
+
+async function logout(email, password) {
+  email.value = "";
+  password.value = "";
+  while (domManager.getProjectBody().lastChild) {
+    domManager
+      .getProjectBody()
+      .removeChild(domManager.getProjectBody().lastChild);
+  }
+  while (domManager.getTaskBody().lastChild) {
+    domManager.getTaskBody().removeChild(domManager.getTaskBody().lastChild);
+  }
+  await signOut(auth);
+}
 
 function writeProject(project) {
-  const projectData = {
-    name: project.getName(),
-    date: project.getDateCreated(),
-    completed: project.isCompleted(),
-  };
-  setDoc(doc(db, "projects", project.getName()), projectData);
+  if (auth.currentUser !== null) {
+    const projectData = {
+      name: project.getName(),
+      date: project.getDateCreated(),
+      completed: project.isCompleted(),
+    };
+    setDoc(
+      doc(db, "users", auth.currentUser.uid, "projects", project.getName()),
+      projectData
+    );
+  }
 }
 
 function writeTask(project, task) {
-  const taskData = {
-    title: task.getTitle(),
-    desc: task.getDesc(),
-    dueDate: task.getDueDate(),
-    priority: task.getPriority(),
-    completed: task.isCompleted(),
-  };
-  setDoc(
-    doc(db, "projects", project.getName(), "tasks", task.getTitle()),
-    taskData
-  );
+  if (auth.currentUser !== null) {
+    const taskData = {
+      title: task.getTitle(),
+      desc: task.getDesc(),
+      dueDate: task.getDueDate(),
+      priority: task.getPriority(),
+      completed: task.isCompleted(),
+    };
+    setDoc(
+      doc(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "projects",
+        project.getName(),
+        "tasks",
+        task.getTitle()
+      ),
+      taskData
+    );
+  }
 }
 
 function deleteProject(project) {
-  console.log(project);
-  deleteDoc(doc(db, "projects", project.getName()));
-  for (let i = 0; i < project.tasks.length; i++) {
-    deleteTask(project, project.tasks[i]);
+  if (auth.currentUser !== null) {
+    console.log(project);
+    deleteDoc(
+      doc(db, "users", auth.currentUser.uid, "projects", project.getName())
+    );
+    for (let i = 0; i < project.tasks.length; i++) {
+      deleteTask(project, project.tasks[i]);
+    }
+    console.log(project.getName());
   }
-  console.log(project.getName());
 }
 
 function deleteTask(project, task) {
-  deleteDoc(doc(db, "projects", project.getName(), "tasks", task.getTitle()));
+  if (auth.currentUser !== null) {
+    deleteDoc(
+      doc(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "projects",
+        project.getName(),
+        "tasks",
+        task.getTitle()
+      )
+    );
+  }
 }
 
 async function loadProjects() {
-  const projects = await getDocs(collection(db, "projects"));
-  projects.forEach((p) => {
-    const storedProject = project(p.id, p.data().date);
-    storedProject.setCompleted(p.data().completed);
-    projectManager.projects.push(storedProject);
-    projectManager.setRecentProject(storedProject);
-    const parentContainer = document.querySelector(".project-body");
-    addProjectToDOM(storedProject, parentContainer);
-    loadTasks(projectManager.getRecentProject());
-  });
+  if (auth.currentUser !== null) {
+    const projects = await getDocs(
+      collection(db, "users", auth.currentUser.uid, "projects")
+    );
+    projects.forEach((p) => {
+      const storedProject = project(p.id, p.data().date);
+      storedProject.setCompleted(p.data().completed);
+      projectManager.projects.push(storedProject);
+      projectManager.setRecentProject(storedProject);
+      const parentContainer = document.querySelector(".project-body");
+      addProjectToDOM(storedProject, parentContainer);
+      loadTasks(projectManager.getRecentProject());
+    });
+  }
 }
 
 async function loadTasks(project) {
-  const tasks = await getDocs(
-    collection(db, "projects", project.getName(), "tasks")
-  );
-  tasks.forEach((t) => {
-    const storedTask = task(
-      t.id,
-      t.data().desc,
-      t.data().dueDate,
-      t.data().priority
+  if (auth.currentUser !== null) {
+    const tasks = await getDocs(
+      collection(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "projects",
+        project.getName(),
+        "tasks"
+      )
     );
-    storedTask.setCompleted(t.data().completed);
-    project.tasks.push(storedTask);
-  });
-  showActiveProjectTasks();
+    tasks.forEach((t) => {
+      const storedTask = task(
+        t.id,
+        t.data().desc,
+        t.data().dueDate,
+        t.data().priority
+      );
+      storedTask.setCompleted(t.data().completed);
+      project.tasks.push(storedTask);
+    });
+    showActiveProjectTasks();
+  }
 }
 
 function updateCompletedProject(project) {
-  updateDoc(doc(db, "projects", project.getName()), {
-    completed: project.isCompleted(),
-  });
+  if (auth.currentUser !== null) {
+    updateDoc(
+      doc(db, "users", auth.currentUser.uid, "projects", project.getName()),
+      {
+        completed: project.isCompleted(),
+      }
+    );
+  }
 }
 
 function updateCompletedTask(project, task) {
-  updateDoc(doc(db, "projects", project.getName(), "tasks", task.getTitle()), {
-    completed: task.isCompleted(),
-  });
+  if (auth.currentUser !== null) {
+    updateDoc(
+      doc(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "projects",
+        project.getName(),
+        "tasks",
+        task.getTitle()
+      ),
+      {
+        completed: task.isCompleted(),
+      }
+    );
+  }
 }
 
 export {
@@ -116,4 +237,8 @@ export {
   loadProjects,
   updateCompletedProject,
   updateCompletedTask,
+  createAccount,
+  logout,
+  monitorAuthState,
+  signAccountIn,
 };

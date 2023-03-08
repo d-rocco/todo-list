@@ -5,11 +5,17 @@ import {
   createDefaultProject,
   createDefaultTask,
 } from "./create";
-import { loadProjects } from "./storage";
+import {
+  loadProjects,
+  createAccount,
+  logout,
+  monitorAuthState,
+  signAccountIn,
+} from "./storage";
+import { doc } from "firebase/firestore";
 
 /***Project Related Code***/
-
-loadProjects();
+monitorAuthState();
 
 // createDefaultProject();
 
@@ -17,7 +23,7 @@ loadProjects();
 document
   .querySelector(".add-project-btn")
   .addEventListener("click", function (e) {
-    document.querySelector(".project-header").hidden = true;
+    document.querySelector(".add-project-btn").hidden = true;
     document.querySelector(".add-project-form").hidden = false;
   });
 
@@ -27,6 +33,7 @@ document
   .addEventListener("click", function (e) {
     e.preventDefault();
     submitProject();
+    document.querySelector(".add-project-btn").hidden = false;
   });
 
 // creates a new project when user hits enter
@@ -36,6 +43,7 @@ document
     if (e.key === "Enter") {
       e.preventDefault();
       submitProject();
+      document.querySelector(".add-project-btn").hidden = false;
     }
   });
 
@@ -66,3 +74,34 @@ document
       e.preventDefault();
     }
   });
+
+const txtEmail = document.getElementById("email");
+const txtPassword = document.getElementById("password");
+const signForm = document.getElementById("sign-form");
+const signOutForm = document.getElementById("sign-out-form");
+
+document
+  .getElementById("create-account")
+  .addEventListener("click", function (e) {
+    createAccount(txtEmail, txtPassword);
+  });
+
+document.getElementById("sign-in").addEventListener("click", function (e) {
+  signAccountIn(txtEmail, txtPassword);
+});
+
+document.querySelector(".sign-out-btn").addEventListener("click", function (e) {
+  logout(txtEmail, txtPassword);
+});
+
+function showSignForm() {
+  signForm.style.display = "grid";
+  signOutForm.style.display = "none";
+}
+
+function showSignOut() {
+  signForm.style.display = "none";
+  signOutForm.style.display = "grid";
+}
+
+export { showSignForm, showSignOut };
